@@ -30,10 +30,12 @@
 job *lista_jobs;  //creamos lista de procesos no terminados.
 
 
-void rutina_thread(pid_t pid)
+void *rutina_thread(void *parametros)
 {
-	sleep(30);
-	kill(pid, SIGKILL);
+	int *param = (int*)parametros;
+	sleep(param[0]);
+	kill(param[1], SIGKILL);
+	pthread_exit(NULL);
 }
 
 
@@ -171,6 +173,7 @@ int main(void)
 
 	char inputBuffer[MAX_LINE]; /* buffer to hold the command entered */
 	int background = 0;             /* equals 1 if a command is followed by '&' */
+	int alarm_thread = 0;
 	char *args[MAX_LINE/2];     /* command line (of 256) has max of 128 arguments */
 	// probably useful variables:
 	int pid_fork, pid_wait; /* pid for created and waited process */
@@ -191,6 +194,7 @@ int main(void)
 
 	while (1)   /* Program terminates normally inside get_command() after ^D is typed*/
 	{		
+		alarm_thread = 0;
 		printf(CIAN"COMMAND->"RESET);
 		fflush(stdout);
 		get_command(inputBuffer, MAX_LINE, args, &background);  /* get next command */
@@ -203,7 +207,13 @@ int main(void)
 		{
 			continue;   // if empty command
 		}
-		
+		if (strcmp(args[0], "alarm-thread") == 0)
+		{
+			if((atoi(args[1]) > 0) && args[2])
+			{
+				alarm_thread = 1;		
+			}
+		}
 		if (strcmp(args[0], "cd") == 0)
 		{
 			if (args[1] == NULL)
@@ -343,34 +353,7 @@ int main(void)
 				killpg(pgrp, SIGCONT);
 			}
 			mask_signal(SIGCHLD, SIG_UNBLOCK);
-		}
-		else if (strcmp(args[0], "alarm-thread") == 0)
-		{
-			if((atoi(args[1]) > 0) && args[2])
-			{
-				int i = 2;
-
-				while (args[i])
-				{
-					args[i-2] = args[i];
-					i++;
-				}
-				args[i] = '\0';
-				
-				int pthread = pthread_create();
-				if (!pthread)
-				{
-					perror("Error creando el thread\n");
-					continue;
-				}
-			}else{
-				printf(ROJO"Parámetros incorrectos para alarm-thread");
-			}
-			
-			
-
-		}
-		
+		}	
 		else
 		{
 			int respawnable = 0;
@@ -447,6 +430,51 @@ int main(void)
 			}
 			if (pid_fork > 0)
 			{
+				if (alarm_thread == 1)
+				{
+					int i = 2;
+
+					int sleep_time = atoi(args[1]);
+					while (args[i])
+					{
+						args[i-2] = args[i];
+						i++;
+					}
+					args[i] = '\0';
+			
+					pthread_t tid;
+					int parametros[2];
+					parametros[0] = sleep_time;
+					parametros[1] = pid_fork;
+					int pthread = pthread_create(&tid, NULL, rutina_thread, parametros);
+					if (!pthread)
+					{
+						perror("Error creando el thread\n");
+						continue;
+					}
+					pthread_detach(tid);
+				}
+				int i = 2;
+
+				int sleep_time = atoi(args[1]);
+				while (args[i])
+				{
+					args[i-2] = args[i];
+					i++;
+				}
+				args[i] = '\0';
+		
+				pthread_t tid;
+				int parametros[2];
+				parametros[0] = sleep_time;
+				parametros[1] = pid_fork;
+				int pthread = pthread_create(&tid, NULL, rutina_thread, parametros);
+				if (!pthread)
+				{
+					perror("Error creando el thread\n");
+					continue;
+				}
+				pthread_detach(tid);
 				if (background == 0 && respawnable == 0)
 				{
 					if (tcsetpgrp(STDIN_FILENO, pid_fork) == -1)
