@@ -181,6 +181,8 @@ int main(void)
 	enum status status_res; /* status processed by analyze_status() */
 	int info;  /* info processed by analyze_status() */
 
+	int parametros[2];
+
 	lista_jobs = new_list("Lista de trabajos");
 	
 	signal(SIGINT,  SIG_IGN); // crtl+c interrupt tecleado en el terminal
@@ -211,8 +213,20 @@ int main(void)
 		{
 			if((atoi(args[1]) > 0) && args[2])
 			{
-				alarm_thread = 1;		
+				alarm_thread = 1;
+				int i = 2;
+
+				int sleep_time = atoi(args[1]);
+
+				parametros[0] = sleep_time;
+				while (args[i])
+				{
+					args[i-2] = args[i];
+					i++;
+				}
+				args[i] = '\0';
 			}
+			
 		}
 		if (strcmp(args[0], "cd") == 0)
 		{
@@ -432,20 +446,8 @@ int main(void)
 			{
 				if (alarm_thread == 1)
 				{
-					int i = 2;
-
-					int sleep_time = atoi(args[1]);
-					while (args[i])
-					{
-						args[i-2] = args[i];
-						i++;
-					}
-					args[i] = '\0';
-			
-					pthread_t tid;
-					int parametros[2];
-					parametros[0] = sleep_time;
 					parametros[1] = pid_fork;
+					pthread_t tid;
 					int pthread = pthread_create(&tid, NULL, rutina_thread, parametros);
 					if (!pthread)
 					{
@@ -454,27 +456,6 @@ int main(void)
 					}
 					pthread_detach(tid);
 				}
-				int i = 2;
-
-				int sleep_time = atoi(args[1]);
-				while (args[i])
-				{
-					args[i-2] = args[i];
-					i++;
-				}
-				args[i] = '\0';
-		
-				pthread_t tid;
-				int parametros[2];
-				parametros[0] = sleep_time;
-				parametros[1] = pid_fork;
-				int pthread = pthread_create(&tid, NULL, rutina_thread, parametros);
-				if (!pthread)
-				{
-					perror("Error creando el thread\n");
-					continue;
-				}
-				pthread_detach(tid);
 				if (background == 0 && respawnable == 0)
 				{
 					if (tcsetpgrp(STDIN_FILENO, pid_fork) == -1)
