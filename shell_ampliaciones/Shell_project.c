@@ -30,11 +30,19 @@
 job *lista_jobs;  //creamos lista de procesos no terminados.
 
 
+typedef struct{
+	int pid;
+	int sleep;
+}struct_alarm;
+
+
 void *rutina_thread(void *parametros)
 {
-	int *param = (int*)parametros;
-	sleep(param[0]);
-	kill(param[1], SIGKILL);
+	struct_alarm *param = (struct_alarm*)parametros;
+	printf("dormimos %d segundos\n", param->sleep);
+	sleep((unsigned int)param->sleep);
+	printf("matamos proceso con pid %d\n", param->pid);
+	kill(param->pid, SIGKILL);
 	pthread_exit(NULL);
 }
 
@@ -180,8 +188,10 @@ int main(void)
 	int status;             /* status returned by wait */
 	enum status status_res; /* status processed by analyze_status() */
 	int info;  /* info processed by analyze_status() */
-
-	int parametros[2];
+	
+	pthread_t tid;
+	
+	struct_alarm alarma;
 
 	lista_jobs = new_list("Lista de trabajos");
 	
@@ -218,13 +228,13 @@ int main(void)
 
 				int sleep_time = atoi(args[1]);
 
-				parametros[0] = sleep_time;
+				alarma.sleep = sleep_time;
 				while (args[i])
 				{
 					args[i-2] = args[i];
 					i++;
 				}
-				args[i] = '\0';
+				//args[i] = '\0';
 			}
 			
 		}
@@ -446,15 +456,14 @@ int main(void)
 			{
 				if (alarm_thread == 1)
 				{
-					parametros[1] = pid_fork;
-					pthread_t tid;
-					int pthread = pthread_create(&tid, NULL, rutina_thread, parametros);
-					if (!pthread)
+					alarma.pid = (int)pid_fork;
+					int pthread = pthread_create(&tid, NULL, rutina_thread, &alarma);
+					if (pthread != 0)
 					{
 						perror("Error creando el thread\n");
 						continue;
 					}
-					pthread_detach(tid);
+					//pthread_detach(tid);
 				}
 				if (background == 0 && respawnable == 0)
 				{
@@ -514,7 +523,7 @@ int main(void)
 						mask_signal(SIGCHLD, SIG_UNBLOCK);
 					}
 					
-				}
+				}							
 			}
 		}
 	}

@@ -299,8 +299,6 @@ int main(void)
 						i++;
 					}
 					args[i - 2] = '\0';
-
-					while(iters > 0)
 					{
 						pid_t fork_bgteam = fork();
 						if (fork_bgteam < 0)
