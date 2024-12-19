@@ -35,6 +35,19 @@ typedef struct{
 	int sleep;
 }struct_alarm;
 
+typedef struct{
+	int sleep;
+	char **args;
+}struct_delay;
+
+
+int count_arguments(char* arguments[]) {
+    int count = 0;
+    while (arguments[count] != NULL) {
+        count++;
+    }
+    return count;
+}
 
 void *rutina_thread(void *parametros)
 {
@@ -48,14 +61,32 @@ void *rutina_thread(void *parametros)
 }
 
 
-
-int count_arguments(char* arguments[]) {
-    int count = 0;
-    while (arguments[count] != NULL) {
-        count++;
-    }
-    return count;
+void *rutina_delay(void *parametros)
+{
+	struct_delay *retraso = (struct_delay *)parametros;
+	printf("dormimos %d segundos antes de lanzar el proceso (delay-thread)", retraso->sleep);
+	sleep(retraso->sleep);
+	printf("sleep terminado, lanzamos execvp:");
+	pid_t pid_fork = fork();
+	if (pid_fork == 0)
+	{
+		setpgid(getpid(), getpid());
+		execvp(retraso->args[0], retraso->args);
+		perror("Error al ejecutar execvp");
+        exit(EXIT_FAILURE);
+	}
+	if (pid_fork > 0)
+	{
+		printf("Proceso lanzado con pid %d", pid_fork);
+	}
+	printf(MAGENTA"Background job running... pid: %d, command: %s\n"RESET, pid_fork, retraso->args[0]);
+	mask_signal(SIGCHLD, SIG_BLOCK);
+	job *nuevo_trabajo_2 = new_job(pid_fork, BACKGROUND, count_arguments(retraso->args), retraso->args);
+	add_job(lista_jobs, nuevo_trabajo_2);
+	mask_signal(SIGCHLD, SIG_UNBLOCK);
+	pthread_exit(NULL);
 }
+
 
 
 void manejador_chld (int num)
@@ -183,6 +214,7 @@ int main(void)
 	char inputBuffer[MAX_LINE]; /* buffer to hold the command entered */
 	int background = 0;             /* equals 1 if a command is followed by '&' */
 	int alarm_thread = 0;
+	int delay_thread = 0;
 	char *args[MAX_LINE/2];     /* command line (of 256) has max of 128 arguments */
 	// probably useful variables:
 	int pid_fork, pid_wait; /* pid for created and waited process */
@@ -193,6 +225,7 @@ int main(void)
 	pthread_t tid;
 	
 	struct_alarm alarma;
+	struct_delay delay;
 
 	lista_jobs = new_list("Lista de trabajos");
 	
@@ -208,6 +241,7 @@ int main(void)
 	while (1)   /* Program terminates normally inside get_command() after ^D is typed*/
 	{		
 		alarm_thread = 0;
+		delay_thread = 0;
 		printf(CIAN"COMMAND->"RESET);
 		fflush(stdout);
 		get_command(inputBuffer, MAX_LINE, args, &background);  /* get next command */
@@ -236,8 +270,37 @@ int main(void)
 					i++;
 				}
 				args[i-2] = NULL;
+			}else{
+				printf("argumentos inválidos para alarm-thread");
 			}
 			
+		}else if(strcmp(args[0], "delay-thread") == 0)
+		{
+			if((atoi(args[1]) >= 0) && args[2])
+			{
+				delay_thread = 1;
+				int i = 2;
+
+				int sleep_time = atoi(args[1]);
+
+				delay.sleep = sleep_time;
+				int num_args = count_arguments(args) - 2;
+				delay.args = malloc(sizeof(char*) *(num_args + 1));
+				i = 0;
+				while (args[i + 2]) // saltar los primeros dos argumentos
+				{
+					delay.args[i] = strdup(args[i + 2]);
+					if (!delay.args[i])
+					{
+						perror("Error asignando memoria para argumento en delay.args");
+						break; // Salir en caso de error
+					}
+					i++;
+				}
+				delay.args[i] = NULL;
+			}else{
+				printf("argumentos inválidos para delay-thread");
+			}
 		}
 		if (strcmp(args[0], "cd") == 0)
 		{
@@ -474,7 +537,26 @@ int main(void)
 					}
 					pthread_detach(tid);
 				}
-				if (background == 0 && respawnable == 0)
+
+				if(delay_thread == 1)
+				{
+					background = 1;
+					struct_delay *copia = malloc(sizeof(struct_delay));
+					if (!copia)
+					{
+						perror("error asignando memoria para la estructura delay");
+					}
+					*copia = delay;
+					int pthread = pthread_create(&tid, NULL, rutina_delay, copia);
+					if (pthread != 0)
+					{
+						perror("Error creando el thread\n");
+						continue;
+					}
+					pthread_detach(tid);
+				}
+
+				if (background == 0 && respawnable == 0 && delay_thread == 0)
 				{
 					if (tcsetpgrp(STDIN_FILENO, pid_fork) == -1)
 					{

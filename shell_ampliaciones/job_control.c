@@ -166,12 +166,12 @@ void print_item(job * item)
 {
 
     printf("pid: %d, command: %s, state: %s\n", item->pgid, item->args[0], state_strings[item->state]);
-    printf("argumentos: ");
-    for (int i = 0; i< item->num_args; i++)
-    {
-        printf("%s ", item->args[i]);
-    }
-    printf("\n");
+    //printf("argumentos: ");
+    //for (int i = 0; i< item->num_args; i++)
+    //{
+    //    printf("%s ", item->args[i]);
+    //}
+    //printf("\n");
 }
 
 // -----------------------------------------------------------------------
