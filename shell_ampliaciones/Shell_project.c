@@ -43,6 +43,7 @@ void *rutina_thread(void *parametros)
 	sleep((unsigned int)param->sleep);
 	printf("matamos proceso con pid %d\n", param->pid);
 	kill(param->pid, SIGKILL);
+	free(param);
 	pthread_exit(NULL);
 }
 
@@ -234,7 +235,7 @@ int main(void)
 					args[i-2] = args[i];
 					i++;
 				}
-				//args[i] = '\0';
+				args[i-2] = NULL;
 			}
 			
 		}
@@ -377,7 +378,7 @@ int main(void)
 				killpg(pgrp, SIGCONT);
 			}
 			mask_signal(SIGCHLD, SIG_UNBLOCK);
-		}	
+		}
 		else
 		{
 			int respawnable = 0;
@@ -457,13 +458,21 @@ int main(void)
 				if (alarm_thread == 1)
 				{
 					alarma.pid = (int)pid_fork;
-					int pthread = pthread_create(&tid, NULL, rutina_thread, &alarma);
+					struct_alarm *param_copy = malloc(sizeof(struct_alarm));
+					if (!param_copy)
+					{
+						perror("error asignando memoria para la estructura alarma");
+					}
+					*param_copy = alarma;
+					
+
+					int pthread = pthread_create(&tid, NULL, rutina_thread, param_copy);
 					if (pthread != 0)
 					{
 						perror("Error creando el thread\n");
 						continue;
 					}
-					//pthread_detach(tid);
+					pthread_detach(tid);
 				}
 				if (background == 0 && respawnable == 0)
 				{
@@ -523,7 +532,7 @@ int main(void)
 						mask_signal(SIGCHLD, SIG_UNBLOCK);
 					}
 					
-				}							
+				}
 			}
 		}
 	}
