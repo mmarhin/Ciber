@@ -1,0 +1,32 @@
+body {
+	background-color: lightblue;
+	font-family: Arial, sans-serif;
+}
+header {
+	background-color: orange;
+	color: white;
+	padding: 1em;
+}
+#titulo{
+	text-align: center;
+}
+.menu {
+	background-color: red;
+	color: rgb(170,0,0)
+	padding: 1em;
+}
+a {
+	color: greenyellow;
+	text-decoration: none;
+}
+a:hover {
+	font-weight: bold;
+	color: green;
+}
+
+#menu-lateral {
+	background-color: blue;
+}
+ ~ div {
+	background-color: brown;
+}

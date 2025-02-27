@@ -1,0 +1,24 @@
+body {
+	font-family:"Montserrat", sans-serif;
+}
+.alerta{
+	background-color: orange;
+	color: white;
+	padding: 15px;
+	text-align: justify;
+}
+.alerta a{
+	color: white;
+	text-decoration: underline;
+	font-weight: bold;
+}
+.close-btn{
+	position:absolute;
+	color:white;
+	border:none;
+	background:none;
+	font-size: 17px;
+	right: 15px;
+	top: px;
+	cursor:pointer;
+}

@@ -6,19 +6,19 @@ typedef struct Nodo {
     struct Nodo siguiente;
 } Nodo;
 
-Nodo* crearNodo(int dato) {
+/*@null@*/ Nodo* crearNodo(int dato) {
     Nodo* nuevoNodo = (Nodo*)malloc(sizeof(Nodo));
     nuevoNodo->dato = dato;  
     nuevoNodo->siguiente = NULL;
     return nuevoNodo;
 }
 
-void push(Nodo** cima, int dato) {
+void push(/*@null@*/ /*@shared@*/Nodo** cima, int dato) {
     Nodo* nuevoNodo = crearNodo(dato);
     nuevoNodo->siguiente = *cima;
     *cima = nuevoNodo;
 }
-int pop(Nodo** cima) {
+int pop(/*@null@*/ /*@shared@*/Nodo** cima) {
     if (*cima == NULL) {
         printf("La pila está vacía\n");
         return -1;
@@ -35,7 +35,7 @@ int pop(Nodo** cima) {
     return dato;
 }
 
-void imprimirPila(Nodo* cima) {
+void imprimirPila(/*@null@*/ /*@in@*/ Nodo* cima) {
     while (cima != NULL) {
         printf("%d -> ", cima->dato);
         cima = cima->siguiente;
@@ -43,7 +43,7 @@ void imprimirPila(Nodo* cima) {
     printf("NULL\n");
 }
 
-void liberarPila(Nodo** cima) {
+void liberarPila(/*@null@*/ /*@only@*/Nodo** cima) {
     Nodo* actual = *cima;
     while (actual != NULL) {
         Nodo* temp = actual;
@@ -62,7 +62,8 @@ int main() {
     scanf("%d", &n);
 
     // Insertar los elementos en la pila (multiplicados por cuatro)
-    for (int i = 1; i <= n; i++) {
+    int i;
+    for (i = 1; i <= n; i++) {
         push(&pila, i * 4);
     }
 
@@ -74,7 +75,8 @@ int main() {
     int contador = 1;
 
     while (pila != NULL) {
-        for (int i = 0; i < 2; i++) {
+	int i;
+        for (i = 0; i < 2; i++) {
             if (pila != NULL) {
                 printf("Elemento removido: %d\n", pop(&pila));
             }
