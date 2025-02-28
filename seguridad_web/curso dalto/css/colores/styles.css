@@ -1,0 +1,15 @@
+body {
+	margin: 0;
+}
+.box {
+	padding: 20px 50px;
+	background: rgba(38, 189, 216, 0.418);
+	margin: 20px;
+	margin-left: 100px;
+	text-align: center;
+	color: rgba(0, 68, 214, 0.747);
+	border-top: 2px solid #26bdcf;
+	font-family: sans-serif;
+	font-weight: bold;
+	letter-spacing: 3px;
+}

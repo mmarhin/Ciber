@@ -1,5 +1,6 @@
-body {
-	font-family:"Montserrat", sans-serif;
+h1 {
+	font-family:'Allerta Stencil';
+	text-align: center;
 }
 .alerta{
 	background-color: orange;

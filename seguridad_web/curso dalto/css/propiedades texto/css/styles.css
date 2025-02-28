@@ -1,0 +1,16 @@
+p {
+	color:red;
+	font-family:'Mario';
+	font-size:13px;
+	font-weight: lighter;
+	font-style: none;
+	text-align: justify;
+	text-decoration: line-through;
+	line-height: 2;
+	letter-spacing: 0.2px;
+	text-transform: capitalize;
+
+}
+h1 {
+	text-align: center;
+}

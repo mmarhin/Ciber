@@ -1,0 +1,25 @@
+div {
+	background-color: red;
+	width: 150px;
+	margin: auto;
+	text-align: center;
+
+	border-top: 3px solid black;
+	border-bottom: 4px dashed yellow;
+	border-radius: 10px 50px 0px 4px;
+}
+
+body {
+	background-color: black;
+}
+input {
+
+	margin: 5px;
+	padding: 6px 10px;
+	border: none;
+	border-top: 1px solid greenyellow;
+	border-left: 1px solid greenyellow;
+	background-color: transparent;
+	border-radius: 5px;
+	color: greenyellow
+}
