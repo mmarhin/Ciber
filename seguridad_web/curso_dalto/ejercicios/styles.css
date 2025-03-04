@@ -1,0 +1,51 @@
+body {
+	background-color: rgb(255, 255, 255);
+	font-family: sans-serif;
+	color: white;
+}
+
+.card {
+	background-color: #6ac;
+	text-align: center;
+	width: 300px;
+	margin:auto;
+	margin-top: 50px;
+	padding: 20px 10px;
+	box-shadow: 0 0 35px #0006;
+	border-radius: 9px;
+	display: inline-block;
+	margin: 44px;
+}
+.green-card {
+	background-color: #5b7;
+}
+.coral-card {
+	background-color: #f86;
+}
+
+.card_title {
+
+	font-size: 22px;
+	margin: 0;
+	text-transform: uppercase;
+}
+.card_description {
+	font-size: 13px;
+	font-weight: 100;
+	letter-spacing: 2px;
+	text-transform: uppercase;
+	margin:0;
+	margin-top: 5px;
+}
+
+.card_content {
+	font-size: 9px;
+	padding: 10px;
+	padding-bottom: 0px;
+	marginbottomq: 0;
+	text-align: justify;
+}
+.card_image {
+	width: 100px;
+	border-radius: 100%;
+}

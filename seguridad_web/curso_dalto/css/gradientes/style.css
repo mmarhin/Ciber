@@ -1,0 +1,36 @@
+body{
+	background-color: red;
+	margin:0;
+}
+
+.box {
+	width: 300px;
+	height: 400px;
+	background: linear-gradient(to right,transparent 80%, rgba(0, 0, 0, 0.664));
+	margin:0;
+	border-radius: 5px;
+	margin:auto;
+	margin-top: 20px;
+	border-top: 6px solid rgba(0, 0, 0, 0.377);
+	
+}
+.box2 {
+	width: 300px;
+	height: 400px;
+	background: radial-gradient(transparent, rgba(0, 0, 0, 0.664));
+	margin:0;
+	border-radius: 5px;
+	margin:auto;
+	margin-top: 20px;
+	border-top: 6px solid rgba(0, 0, 0, 0.377);
+	
+}
+
+
+h1 {
+	margin:0;
+	color: #fff;
+	text-align: center;
+	padding:20px;
+	font-family: sans-serif;
+}

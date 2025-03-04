@@ -1,0 +1,33 @@
+body{
+	margin: 10px;
+	color:#fff;
+	font-family: sans-serif;
+}
+
+h1{
+	text-align: center;
+	text-transform: uppercase;
+	font-weight: 100;
+	color: #000;
+	letter-spacing: 8px;
+
+}
+.clase{
+	margin-bottom: 10px;
+	padding: 10px;
+	border-radius: 5px;
+}
+#parametros{
+	background-color: #f00;
+
+}
+#mensaje{
+	background-color: rgb(0, 0, 255);
+}
+#contenedor-tablero{
+	background-color: rgb(30, 255, 0);
+}
+#parametros > div {
+	display: grid;
+	grid-template-columns: 50% 50%;
+}
