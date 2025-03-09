@@ -1,0 +1,1 @@
+Imágenes extraídas del proyecto https://github.com/urluur/minesweeper-js.

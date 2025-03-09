@@ -1,12 +1,53 @@
+body{
+	margin:0;
+	font-family: sans-serif;
+	font-size: 14px;
+}
 h1 {
 	font-family:'Allerta Stencil';
 	text-align: center;
+}
+#desc-svaia{
+	font-style: italic;
+}
+#desc-proyecto{
+	background-color: rgba(33,36,40,255);
+	border-radius: 3px;
+	border: #ffffff6e 1px solid;
+	padding: 3px 9px;
+}
+.barra-navegacion{
+	background-color: rgba(44,63,81,255);
+	padding: 10px;
+}
+.enlace{
+	color: #fff;
+	text-decoration: none;
+	margin:7px
+}
+.enlace-azul{
+	color: rgba(24,189,157,255);
+}
+.button{
+	background-color: rgba(149,164,167,255);
+	color: white;
+	padding: 7px;
+	text-decoration: none;
+	border-radius: 5px;
+	cursor: pointer;
+}
+strong{
+	font-weight: bold;
+	font-family: 'Allerta Stencil';
+	font-size: 30px;
 }
 .alerta{
 	background-color: orange;
 	color: white;
 	padding: 15px;
 	text-align: justify;
+	margin:25px 45px;
+	border-radius: 5px;
 }
 .alerta a{
 	color: white;
@@ -14,12 +55,13 @@ h1 {
 	font-weight: bold;
 }
 .close-btn{
-	position:absolute;
-	color:white;
+	position:;
+	color:rgba(255, 255, 255, 0.759);
 	border:none;
 	background:none;
-	font-size: 17px;
-	right: 15px;
-	top: px;
+	font-size: 30px;
+	font-weight:100;
+	right: 150px;
+	top: 10px;
 	cursor:pointer;
 }

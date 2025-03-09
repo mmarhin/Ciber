@@ -1,28 +1,257 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Buscaminas</title>
-	<link rel="stylesheet" href="styles.css">
-	<style type="text/css"></style>
+  <title>BuscUMAnas</title>
+  <link rel="stylesheet" type="text/css" href="estilos.css">
+  <style>
+    #mensaje {
+      background-color: orange;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    #configuracion {
+      background-color: lightblue;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+    }
+    fieldset {
+      display: grid; 
+      grid-template-columns: auto auto; 
+      gap: 10px;
+      margin: 10px;
+    }
+    #contenedor-tablero {
+      background-color: rgb(137, 205, 137);
+      padding: 20px;
+      border-radius: 5px;
+      margin-top: 10px;
+      display: none;
+      justify-content: center;
+    }
+    #tablero {
+      display: flex;
+      background-color: gray;
+      width: calc(21px * 4);
+      flex-wrap: wrap;
+    }
+    .celda {
+      width: 15px;
+      height: 15px;
+      border-style: outset;
+      border-width: 3px;
+      background-size: cover;
+    }
+    .celda.abierta.mina {
+      background-image: url('img/mine.png');
+    }
+    .celda.abierta {
+      border-style: solid;
+      border-width: 1px;
+      border-color: darkgray;
+      width: 19px;
+      height: 19px;
+    }
+    .celda.bandera {
+      background-image: url('img/flag.png');
+    }
+    .celda.vecino-0 {
+      
+    }
+    .celda.vecino-1 {
+      background-image: url('img/num_of_neighbors/open1.png');
+    }
+    .celda.vecino-2 {
+      background-image: url('img/num_of_neighbors/open2.png');
+    }
+    .celda.vecino-3 {
+      background-image: url('img/num_of_neighbors/open3.png');
+    }
+    .celda.vecino-4 {
+      background-image: url('img/num_of_neighbors/open4.png');
+    }
+    .celda.vecino-5 {
+      background-image: url('img/num_of_neighbors/open5.png');
+    }
+    .celda.vecino-6 {
+      background-image: url('img/num_of_neighbors/open6.png');
+    }
+    .celda.vecino-7 {
+      background-image: url('img/num_of_neighbors/open7.png');
+    }
+    .celda.vecino-8 {
+      background-image: url('img/num_of_neighbors/open8.png');
+    }
+  </style>
 </head>
 <body>
-	<h1>Buscaminas</h1>
-	<div id="parametros" class="clase">
-		<h3>Parametros</h3>
-		<div>
-			<label for="filas">Filas:</label>
-			<input type="number" id="filas" value="10">
-			<label for="columnas">Columnas:</label>
-			<input type="number" id="columnas" value="10">
-		</div>
-	</div>
-	<div id="mensaje" class="clase">Mensaje</div>
-	<div id="contenedor-tablero" class="clase">Contenededor
-	</div>
-	<script>
+  <h1>Busc<span style="color:blue;font-style: italic;">UMA</span>nas</h1>
+  <div id="configuracion">
+    <fieldset>
+      <label for="filas">Filas:</label>
+      <input type="number" id="filas" value="10">
+      <label for="columnas">Columnas:</label>
+      <input type="number" id="columnas" value="10">
+      <label for="minas">Minas (%):</label>
+      <input type="range" id="minas" min="10" max="90" value="20">
+    </fieldset>
+    <div style="text-align: center;">
+      <button id="empezar">Empezar</button>
+    </div>
+  </div>
+  <div id="mensaje">Configura el juego y pulsa en el botón "Empezar".</div>
+  <div id="contenedor-tablero">
+    <div id="tablero">
+      <div ic="celda-0-0" class="celda" onclick="clic_celda(event)"></div>
+      <div ic="celda-0-1" class="celda"></div>
+      <div ic="celda-0-2" class="celda"></div>
+      <div ic="celda-0-3" class="celda abierta"></div>
+      <div ic="celda-1-0" class="celda mina"></div>
+      <div ic="celda-1-1" class="celda"></div>
+      <div ic="celda-1-2" class="celda"></div>
+      <div ic="celda-1-3" class="celda abierta"></div>
+      <div ic="celda-2-0" class="celda mina"></div>
+      <div ic="celda-2-1" class="celda mina"></div>
+      <div ic="celda-2-2" class="celda vecino-1"></div>
+      <div ic="celda-2-3" class="celda bandera"></div>
+      <div ic="celda-3-0" class="celda"></div>
+      <div ic="celda-3-1" class="celda vecino-2"></div>
+      <div ic="celda-3-2" class="celda"></div>
+      <div ic="celda-3-3" class="celda"></div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    var fin = true;
+    var celdasAbiertas = 0;
+    var minasEnTablero = Infinity;
 
-	</script>
-</body>
+    var inputFilas = document.getElementById("filas");
+    var inputColumnas = document.getElementById("columnas");
+    var inputMinas = document.getElementById("minas");
+    var mensaje = document.getElementById("mensaje");
+
+    //var clic_celda = (event) => {
+    var clic_celda = function(event) {
+      // Si el juego ha terminado, no hacer nada
+      if (fin) {
+        return;
+      }
+
+      const celda = event.target;
+
+      // Marcar con bandera si se hace clic con el botón derecho
+      if (event.button === 2) {
+        event.preventDefault(); // Evitar que se muestre el menú contextual
+        if (celda.classList.contains("bandera")) {
+          celda.classList.remove("bandera");
+        } else {
+          celda.classList.add("bandera");
+        }
+        return;
+      }
+
+      // Marcar celda como abierta
+      celda.classList.add("abierta");
+      celdasAbiertas++;
+
+      if (celda.classList.contains("mina")) {
+        celda.style.backgroundColor = "red";
+        mensaje.style.display = "inherit";
+        mensaje.innerHTML = "¡Has perdido!";
+        fin = true;
+
+        // Mostrar todas las minas
+        let celdasConMinas = document.getElementsByClassName("mina");
+        for (let celdaMina of celdasConMinas) {
+          celdaMina.classList.add("abierta");
+        }
+      } else {
+        // Obtener coordenadas de la celda
+        let coordenadas = celda.id.split("-"); // ["celda", "1", "2"]
+        let fila = parseInt(coordenadas[1]);
+        let columna = parseInt(coordenadas[2]);
+
+        // Contar minas alrededor
+        let minasAlrededor = 0;
+        for (let i = fila - 1; i <= fila + 1; i++) {
+          for (let j = columna - 1; j <= columna + 1; j++) {
+            if (i >= 0 && i < inputFilas.value && j >= 0 && j < inputColumnas.value) {
+              let celda = document.getElementById("celda-" + i + "-" + j);
+              if (celda.classList.contains("mina")) {
+                minasAlrededor++;
+              }
+            }
+          }
+        }
+
+        // Mostrar número de minas alrededor
+        celda.classList.add("vecino-"+minasAlrededor);
+
+        // Si no hay minas alrededor, abrir celdas adyacentes
+        if (minasAlrededor === 0) {
+          for (let i = fila - 1; i <= fila + 1; i++) {
+            for (let j = columna - 1; j <= columna + 1; j++) {
+              if (i >= 0 && i < inputFilas.value && j >= 0 && j < inputColumnas.value) {
+                let celda = document.getElementById("celda-" + i + "-" + j);
+                if (!celda.classList.contains("abierta") && !celda.classList.contains("bandera")) {
+                  clic_celda({target: celda});
+                }
+              }
+            }
+          }
+        }
+
+        // Comprobar si se han abierto todas las celdas
+        console.log(celdasAbiertas, (inputFilas.value * inputColumnas.value) - minasEnTablero);
+        if (celdasAbiertas === (inputFilas.value * inputColumnas.value) - minasEnTablero) {
+          mensaje.style.display = "inherit";
+          mensaje.innerHTML = "¡Has ganado!";
+          fin = true;
+        }
+      }
+    };
+    
+    function resetearTablero(filas, columnas, minas) {
+      let tablero = document.getElementById("tablero");
+      // Eliminar celdas anteriores
+      tablero.innerHTML = "";
+      celdasAbiertas = 0;
+
+      // Crear celdas nuevas
+      for (let i = 0; i < filas; i++) {
+        for (let j = 0; j < columnas; j++) {
+          let celda = document.createElement("div");
+          celda.id = "celda-" + i + "-" + j;
+          celda.className = "celda";
+          celda.onclick = celda.oncontextmenu = clic_celda;
+          tablero.appendChild(celda);
+        }
+      }
+      tablero.style.width = (columnas * 21) + "px";
+
+      // Colocar minas aleatoriamente
+      let densidadMinas = parseInt(minas) / 100;
+      minasEnTablero = Math.floor(filas * columnas * densidadMinas);
+      for (let i = 0; i < minasEnTablero; i++) {
+        let fila = Math.floor(Math.random() * filas);
+        let columna = Math.floor(Math.random() * columnas);
+        let celda = document.getElementById("celda-" + fila + "-" + columna);
+        if (celda.classList.contains("mina")) {
+          i--;
+        } else {
+          celda.classList.add("mina");
+        }
+      }
+    }
+
+    // Evento para el botón "Empezar"
+    document.getElementById("empezar").addEventListener("click", function() {
+      resetearTablero(inputFilas.value, inputColumnas.value, inputMinas.value);
+      mensaje.style.display = "none";
+      document.getElementById("contenedor-tablero").style.display = "flex";
+      fin = false;
+    });
+  </script>
 </html>

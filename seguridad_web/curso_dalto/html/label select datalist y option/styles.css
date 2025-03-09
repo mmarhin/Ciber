@@ -15,34 +15,46 @@ h2{
 }
 form{
 	background: transparent;
-	padding: 20px 0;
+	padding: 20px 50;
 	margin: auto;
 	max-width: 500px;
 	box-shadow: 0 0 55px #fff2;
 	margin-top: 50px;
+
 
 }
 .form_input{
 	padding: 6px 20px;
 
 }
-input, textarea{
+input, textarea, select{
 	width: 100%;
 	box-sizing: border-box;
 	padding: 6px 8px;
 	border:none;
-	border: 1px solid #666;
+	border: 1px solid #4f9;
 	box-shadow: 0 0 15px #0001;
 	background-color: transparent;
 	border-radius: 5px;
-	color: #eee;
-	resize: both;
+	color: #4f9;;
+}
+option{
+	background-color: #222;
+	color: #4f9;
 }
 textarea{
 	min-width: 100%;
-	resize: vertical;
+	resize: none;
 	min-height: 30px;
 	max-height: 300px;
 	font-family: sans-serif;
-	formsizing:content;
+	form-sizing:content;
+}
+
+label{
+	font-size: 0.88em;
+	line-height: 2;
+}
+.checkbox{
+	width:auto;
 }
